@@ -99,7 +99,10 @@ function App() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ weather: current }),
       });
-      if (!tipsRes.ok) throw new Error('Failed to generate tips. Check that the API server is running.');
+      if (!tipsRes.ok) {
+        const errData = await tipsRes.json().catch(() => ({}));
+        throw new Error(errData.error || 'Failed to generate tips.');
+      }
       const tipsData = await tipsRes.json();
       setTips(tipsData.tips);
       setPhase('done');

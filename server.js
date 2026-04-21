@@ -42,7 +42,12 @@ app.post('/api/tips', async (req, res) => {
     res.json({ tips });
   } catch (e) {
     console.error('Tips error:', e.message);
-    res.status(500).json({ error: 'Failed to generate tips' });
+    const status = e.status ?? 500;
+    const message =
+      status === 401 ? 'Invalid or missing ANTHROPIC_API_KEY.' :
+      status === 429 ? 'Anthropic rate limit reached — try again shortly.' :
+      `Failed to generate tips: ${e.message}`;
+    res.status(status).json({ error: message });
   }
 });
 
